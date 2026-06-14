@@ -1,0 +1,21 @@
+# Private planning docs — never publish
+docs/PORTFOLIO_PRD.md
+docs/PORTFOLIO_IA.md
+
+# JIRA and employer data — never publish
+docs/JIRA_STORIES.md
+docs/JIRA_EXPORT_SANITIZED.csv
+docs/JIRA_METRICS_DRAFT.md
+docs/BEST_AC_EXAMPLES_DRAFT.md
+docs/TECH_COMPLEXITY_DRAFT.md
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# Standard ignores
+node_modules/
+.next/
+.DS_Store
+*.log
