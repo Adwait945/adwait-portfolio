@@ -8,6 +8,7 @@ export type SiteConfig = {
   githubUrl: string;
   hero: {
     eyebrow: string;
+    subheadline?: string;
     headlineLead: string;
     headlineMuted: string;
     headlineTrailing: string;
