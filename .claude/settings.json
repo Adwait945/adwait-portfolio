@@ -1,0 +1,119 @@
+{
+  "_comment": "Rename to .claude/settings.json. Hooks are deterministic guards — they run as shell commands and cannot be talked out of by the model. Customize per project.",
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "_comment_1": "GUARD: Block any agent except 'test' from editing files in __tests__/. Tests are immutable in DEV's role — fix code to match tests, never tests to match code.",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // empty'); if echo \"$FILE\" | grep -q '__tests__\\|\\.test\\.\\|\\.spec\\.'; then if [ \"$CLAUDE_AGENT_NAME\" != \"test\" ]; then echo 'BLOCKED: Only the test agent may modify test files. Fix the source code to make tests pass, not the other way around.' >&2; exit 2; fi; fi; exit 0"
+          }
+        ]
+      },
+      {
+        "_comment_2": "GUARD: Prevent any agent from editing .env directly. New env vars go in .env.example with documentation; human updates actual .env.",
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // empty'); if echo \"$FILE\" | grep -qE '/\\.env$|/\\.env\\.local$|/\\.env\\.production$'; then echo 'BLOCKED: Never edit .env directly. Add the new variable to .env.example with documentation, update CLAUDE.md, and let the human update their actual .env.' >&2; exit 2; fi; exit 0"
+          }
+        ]
+      },
+      {
+        "_comment_3": "GUARD: Block dangerous bash commands. Hard-rm of common project files = stop and ask the human.",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CMD=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.command // empty'); if echo \"$CMD\" | grep -qE 'rm -rf /|rm -rf ~|rm -rf \\$HOME|git push --force|git reset --hard origin'; then echo 'BLOCKED: This command is destructive. If you intend it, ask the human to run it directly.' >&2; exit 2; fi; exit 0"
+          }
+        ]
+      }
+    ],
+
+    "PostToolUse": [
+      {
+        "_comment_4": "AUTO-FORMAT: After any file edit, run Prettier if configured. Customize for your formatter — biome, eslint --fix, ruff, gofmt, etc.",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$CLAUDE_TOOL_INPUT\" | jq -r '.file_path // empty'); if [ -f .prettierrc ] || [ -f .prettierrc.json ] || [ -f prettier.config.js ]; then if echo \"$FILE\" | grep -qE '\\.(ts|tsx|js|jsx|json|css|md)$'; then npx prettier --write \"$FILE\" 2>/dev/null || true; fi; fi; exit 0"
+          }
+        ]
+      }
+    ],
+
+    "SessionStart": [
+      {
+        "_comment_5": "MEM0 RECALL: If Mem0 MCP is configured, remind the agent to search for project context early in the session.",
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -n \"$MEM0_API_KEY\" ]; then echo '[hint] Mem0 MCP available — agents should search Mem0 for project context as pre-flight'; fi; exit 0"
+          }
+        ]
+      }
+    ],
+
+    "SubagentStop": [
+      {
+        "_comment_6": "LOG: Track subagent completions for visibility.",
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "AGENT=$(echo \"$CLAUDE_HOOK_INPUT\" | jq -r '.subagent_name // \"unknown\"'); echo \"[$(date '+%Y-%m-%d %H:%M:%S')] subagent $AGENT completed\" >> .claude/subagent.log; exit 0"
+          }
+        ]
+      }
+    ]
+  },
+
+  "permissions": {
+    "_comment_permissions": "Pre-approve safe commands so agents don't need to ask. Tighten or loosen based on what your agents actually need. The 'ask' list requires explicit human approval for destructive operations.",
+    "allow": [
+      "Bash(npm test:*)",
+      "Bash(npm run test:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(npm audit:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm audit:*)",
+      "Bash(yarn test:*)",
+      "Bash(yarn typecheck:*)",
+      "Bash(yarn build:*)",
+      "Bash(yarn install:*)",
+      "Bash(yarn audit:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(jq:*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git rebase:*)",
+      "Bash(git revert:*)",
+      "Bash(rm:*)",
+      "Bash(mv:*)"
+    ]
+  }
+}
