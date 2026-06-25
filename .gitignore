@@ -34,3 +34,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code — contains API keys
+.claude/mcp.json
+.claude/subagent.log
+
+# private working docs
+docs/Portfolio___Current_State.md
