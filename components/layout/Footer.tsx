@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { Linkedin, Github, Mail } from "lucide-react";
+import { Briefcase, Code2, Mail } from "lucide-react";
 import { siteConfig } from "@/lib/site-config";
 import Container from "@/components/layout/Container";
 
+// lucide-react dropped its brand glyphs (Linkedin/Github); use semantic
+// generic icons. The accessible name comes from each link's aria-label.
 const iconMap = {
-  LinkedIn: Linkedin,
-  GitHub: Github,
+  LinkedIn: Briefcase,
+  GitHub: Code2,
   Email: Mail,
 } as const;
 
