@@ -199,14 +199,14 @@ export const experience: Experience = {
     {
       period: "2016 – 2018",
       role: "Systems Analyst",
-      company: "FedEx · via Essential Technologies · API Products",
+      company: "via Essential Technologies · API Products",
       description:
         "Drove a REST and SOAP API platform for FedEx Office's e-commerce printing channel, including a public API portal enabling commercial customers to embed services in white-labeled apps.",
     },
     {
       period: "2011 – 2016",
       role: "Earlier",
-      company: "Aperia Solutions · Techgene Solutions / MedAssets",
+      company: "",
       description:
         "Aperia Solutions (Senior Business Analyst, 2013–2016) · Techgene Solutions / MedAssets (Business Analyst, 2011–2013)",
     },
