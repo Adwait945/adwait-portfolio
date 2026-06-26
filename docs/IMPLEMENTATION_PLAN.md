@@ -186,7 +186,7 @@ _Written by ARCHITECT on 2026-06-25_
 **File(s):** `app/page.tsx` (rewrite), `components/home/Hero.tsx` (light edit via siteConfig), `lib/content/home.ts`
 **AC refs:** Locked section order, AC-2.1, AC-3.3, DEBT-0.2 resolution
 **Pre-req specs:** E2E-1, E2E-2, E2E-3
-- [x] (TASK-1.13b inline) Repoint `siteConfig.hero.primaryCta.href` → `routes.teamsRetro`, `secondaryCta.href` → `"#how-i-work"` (data only; do NOT edit Hero JSX; Sprint-0 Hero tests stay green)
+- [x] Repoint `siteConfig.hero.primaryCta.href` → `/work/teams-retro`, `secondaryCta.href` → `#how-i-work` — resolved in post-DEV coordinator pass (ADR-0009); Sprint-0 placeholder tests retired and updated to real hrefs (DEBT-0.2 closed)
 - [x] `app/page.tsx`: render in EXACT order — `<Hero/>` `<HowIWork/>` `<SelectedWork/>` `<CareerTrajectory/>` `<Skills/>` `<Experience/>` `<Education/>` `<About/>` `<BeyondTheWork/>` `<ContactCTA/>`
 - [x] No `<div>` wrapper that duplicates `<main>` (layout already provides `<main id>`); no Nav/Footer here
 - [x] Export `metadata` for `/` from `siteConfig.meta.home` (or rely on layout default + per-page override — see TASK-1.16)
@@ -236,7 +236,7 @@ _Written by ARCHITECT on 2026-06-25_
 **File(s):** `playwright.config.ts`, `package.json`
 **AC refs:** NFR-11.E2E
 - [x] Add `@playwright/test`; `playwright.config.ts` (`testDir: src/__tests__/e2e`, Chromium + 360px mobile project, `webServer` build+start)
-- [x] Wire CI script so `npm run test:run` runs Jest then Playwright (or document the composite gate)
+- [ ] Wire CI script so `npm run test:run` runs Jest then Playwright — NOT done; `test:run` is Jest-only. E2E requires a running server; use `npm run test:e2e` separately after `npm run dev`. REVIEWER FAIL #4 — pending.
 - [x] (TEST authors E2E-1…E2E-12 specs; DEV does not modify them)
 **Commit:** `chore(test): playwright e2e config (TASK-1.19)`
 

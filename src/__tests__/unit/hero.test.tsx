@@ -79,18 +79,18 @@ describe('AC-UI-1.4: Sub-headline paragraph', () => {
 // AC-UI-1.5 / AC-UI-1.6: CTA buttons — rendered as anchor elements
 // ---------------------------------------------------------------------------
 describe('AC-UI-1.5 / AC-UI-1.6: CTA anchor elements', () => {
-  it('AC-UI-1.5: primary CTA is an anchor linking to "#"', () => {
+  it('AC-UI-1.5: primary CTA is an anchor linking to /work/teams-retro (Sprint 1 — DEBT-0.2 resolved)', () => {
     render(<Hero />)
     const primaryLink = screen.getByRole('link', { name: /View Featured Work/i })
     expect(primaryLink).toBeInTheDocument()
-    expect(primaryLink).toHaveAttribute('href', '#')
+    expect(primaryLink).toHaveAttribute('href', '/work/teams-retro')
   })
 
-  it('AC-UI-1.6: secondary CTA is an anchor linking to "#"', () => {
+  it('AC-UI-1.6: secondary CTA is an anchor linking to #how-i-work (Sprint 1 — DEBT-0.2 resolved)', () => {
     render(<Hero />)
     const secondaryLink = screen.getByRole('link', { name: /How I Build/i })
     expect(secondaryLink).toBeInTheDocument()
-    expect(secondaryLink).toHaveAttribute('href', '#')
+    expect(secondaryLink).toHaveAttribute('href', '#how-i-work')
   })
 
   it('AC-UI-1.5: ArrowRight icon inside primary CTA is aria-hidden (decorative)', () => {

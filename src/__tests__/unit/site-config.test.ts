@@ -76,16 +76,16 @@ describe('AC-0.6 / AC-0.9 / NFR-1.I: siteConfig.hero — locked Hero copy', () =
     expect(siteConfig.hero.primaryCta.label).toContain('View Featured Work')
   })
 
-  it('AC-0.7: hero.primaryCta.href is "#" (Sprint 0 placeholder)', () => {
-    expect(siteConfig.hero.primaryCta.href).toBe('#')
+  it('AC-0.7: hero.primaryCta.href points to /work/teams-retro (Sprint 1 — DEBT-0.2 resolved)', () => {
+    expect(siteConfig.hero.primaryCta.href).toBe('/work/teams-retro')
   })
 
   it('AC-0.7: hero.secondaryCta.label is "How I Build"', () => {
     expect(siteConfig.hero.secondaryCta.label).toBe('How I Build')
   })
 
-  it('AC-0.7: hero.secondaryCta.href is "#" (Sprint 0 placeholder)', () => {
-    expect(siteConfig.hero.secondaryCta.href).toBe('#')
+  it('AC-0.7: hero.secondaryCta.href points to #how-i-work (Sprint 1 — DEBT-0.2 resolved)', () => {
+    expect(siteConfig.hero.secondaryCta.href).toBe('#how-i-work')
   })
 })
 

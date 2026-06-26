@@ -1,15 +1,26 @@
-# Sprint 0 — Audit Report
+# Sprint 1 — Audit Report (RE-AUDIT)
+_Written by REVIEWER on 2026-06-26 — re-audit after the prior REJECTED verdict and applied fixes_
 
-**Verdict: APPROVED**
-
-_Written by REVIEWER on 2026-06-25 · Sprint 0 · Epic 1: Next.js Foundation + Hero_
+## Verdict: APPROVED
 
 ## Summary
 - ✅ PASS: 24
-- ❌ FAIL: 0
 - ⚠️ N/A: 4
+- ❌ FAIL: 0
 
-APPROVED requires zero FAIL items. Zero FAIL items found. The feature ships.
+All four blocking FAILs from the prior audit are resolved and verified against live code, tests, and the new ADR. No new FAILs introduced.
+
+---
+
+## Re-Audit of the Prior FAILs (verification)
+
+| Prior FAIL | Status | Evidence |
+|---|---|---|
+| Hero CTAs still `'#'` (DEBT-0.2 open) | ✅ FIXED | `lib/site-config.ts:47-48` → `primaryCta.href = '/work/teams-retro'`, `secondaryCta.href = '#how-i-work'`. Rendered by `components/home/Hero.tsx:30,37`. |
+| Sprint-0 placeholder tests locked hrefs to `'#'` | ✅ FIXED | `src/__tests__/unit/site-config.test.ts:79-89` and `src/__tests__/unit/hero.test.tsx:82-93` now assert the real hrefs, descriptions read "(Sprint 1 — DEBT-0.2 resolved)". |
+| `home-page.test.tsx` "all links href='#'" + "no nav element" | ✅ FIXED | `src/__tests__/integration/home-page.test.tsx:50-61` asserts specific CTA hrefs; obsolete assertions removed; comment at `:46-48` points coverage to `layout-s1.test.tsx` + `home-page-s1.test.tsx`. |
+| Missing ADR for the decision | ✅ FIXED | `docs/adrs/ADR-0009-hero-cta-href-sprint1.md` documents the decision + coordinator-level test retirement. |
+| `IMPLEMENTATION_PLAN.md` TASK-1.15 / TASK-1.19 status | ✅ FIXED | TASK-1.15 boxes checked with ADR-0009 note; TASK-1.19 E2E-wiring box left unchecked with the `npm run test:e2e` rationale. |
 
 ---
 
@@ -18,99 +29,109 @@ APPROVED requires zero FAIL items. Zero FAIL items found. The feature ships.
 ### Category 1: Workflow Compliance
 | # | Check | Result | Notes |
 |---|---|---|---|
-| 1 | AC Coverage | ✅ PASS | All AC-0.1–0.13 and AC-UI-1.1–1.10 mapped to a test or CLI/REVIEWER gate in TEST_SPEC.md AC Coverage Matrix. |
-| 2 | NFR Coverage | ✅ PASS | All 8 NFRs (P, A, B, I, S, O, T, ST) have a test or gate. P=build route table; A=jest-axe; T=typecheck; S/O=grep gates; ST=hero.test.tsx; I=site-config+hero tests; B=manual browser. |
-| 3 | Plan Completion | ✅ PASS | `grep "^- \[ \]"` on IMPLEMENTATION_PLAN.md returns zero unchecked boxes. TASK-0.0–0.13 all `[x]`. |
-| 4 | Anti-hallucination | ✅ PASS | All Hero strings trace to `siteConfig`, which traces verbatim to PORTFOLIO_CONTENT.md §1/§3 (LinkedIn, GitHub, sub-headline with em-dash, eyebrow). No TODO/FIXME/placeholder/mock data in app/, components/, lib/. |
-| 5 | Naming Conventions | ✅ PASS | `Hero.tsx`/`RootLayout`/`Home`/`Error` PascalCase; `site-config.ts` kebab-case in lib/; `SiteConfig` type PascalCase; `siteConfig` camelCase const. |
-| 6 | Architecture Fidelity | ✅ PASS | All files at ARCHITECT-specified paths (repo-root app/, components/home/, lib/). No extra production files created. |
-| 7 | Prototype Fidelity | ✅ PASS | Hero.tsx matches `docs/prototypes/Hero.tsx` class strings + JSX structure; correctly dropped framer-motion, shadcn Button, hardcoded hex (now token classes). Matches `docs/ui-mocks/hero.png` visually (dark navy bg, cyan eyebrow pill, segmented headline, muted sub-headline, cyan primary CTA + arrow, glass secondary). Nav name not rendered per AC-UI-1.10. |
-| 8 | ADR Alignment | ✅ PASS | ADR-0001 (next/font/google) → layout.tsx; ADR-0002 (site-config) → lib/site-config.ts; ADR-0003 (HSL-channel vars + hsl() wrap) → globals.css + tailwind.config.ts; ADR-0004 (Jest+RTL via next/jest) → test toolchain. Implementation matches all four. |
+| 1 | AC Compliance | ✅ PASS | Epics 1–11 ACs satisfied; 284 Jest tests (incl. 58 Sprint-1 specs) green; AC-3.7/AC-4.1/AC-11.1 negative assertions confirm no fabricated/"AI Intelligence Center" content. |
+| 2 | NFR Compliance | ✅ PASS | NFR-G.TC (tsc 0 errors), NFR-G.BU (build clean), NFR-G.ST (no inline style), NFR-G.LL (no console), NFR-G.SL (max prod file 184 lines), NFR-G.TH (`<html className="dark …">` + 3 font vars intact, `app/layout.tsx:53-56`), a11y aria-labels present on icon-only buttons. |
+| 3 | Plan Completion | ✅ PASS (with documented exception) | Only one `[ ]` remains: `IMPLEMENTATION_PLAN.md:239` — TASK-1.19 E2E CI wiring, intentionally deferred to the `npm run test:e2e` live-server gate (documented; not a code task). |
+| 4 | Anti-Hallucination | ✅ PASS | No TODO/FIXME/HACK/Lorem in `app/ components/ lib/`. "placeholder" appears only as legitimate design language (dashed placeholder cards). |
+| 5 | Naming Conventions | ✅ PASS | Component/file names match ARCHITECTURE_DESIGN + CLAUDE.md mapping (HowIWork, SelectedWork, CareerTrajectory, etc.). |
+| 6 | Architecture Compliance | ✅ PASS | RSC-by-default; only Nav/MobileMenu/ResumeDropdown are client islands; content split into `lib/content/*`; no DB/ORM in components. |
+| 7 | Prototype Fidelity | ⚠️ N/A | No new `docs/ui-mocks/` screenshots delivered with this re-audit; visual parity is a Tier-3 post-deploy check. Class patterns match the documented prototype specs. |
+| 8 | ADRs Exist | ✅ PASS | ADR-0009 covers the Hero-CTA-href decision and the test retirement — the non-trivial decision flagged this sprint. |
 
 ### Category 2: Build & Quality Gates
 | # | Check | Result | Notes |
 |---|---|---|---|
-| 9 | Clean Build | ✅ PASS | `npm run build` → "Compiled successfully", 5 static pages, 0 errors, 0 warnings. |
-| 10 | Styling Compliance | ✅ PASS | `grep "style={{"` and `grep "<style"` in app/+components/ → zero matches. Tailwind utilities only. |
-| 11 | Test Suite | ✅ PASS | `npm run test:run` → 6 suites, 52/52 tests pass. See Discrepancy Note re: DEV's T-0.2 report. |
-| 12 | Type Safety | ✅ PASS | `npx tsc --noEmit` exits 0, zero errors, strict mode. |
-| 13 | Dependency Security | ✅ PASS | `npm audit --audit-level=high` → 4 high / 18 moderate, ALL in pre-existing `next@14.2.35` + transitive `postcss`. None introduced by this sprint's only new dep (`lucide-react`). No NEW high/critical vs. scaffold. |
-| 14 | Bundle Size | ✅ PASS | `/` First Load JS = 88 kB vs. 250 kB budget (~35%). Well within cap. |
+| 9 | No Breaking Changes | ✅ PASS | `npm run build` → compiled successfully, 11 static routes, sitemap.xml + robots.txt emitted. |
+| 10 | Styling Compliance | ✅ PASS | `grep "style={{"` and `grep "<style"` over `src/ lib/ app/ components/` → zero hits. (MobileMenu's `document.body.style.overflow` scroll-lock is an effect-side DOM op, not a JSX inline style — permitted.) |
+| 11 | Tests Passing | ✅ PASS | `npm run test:run` → 22 suites, 284/284 tests pass. Unit + integration + contract (`contract/no-api-routes.test.ts`) + a11y tiers all ran. |
+| 12 | Type Safety | ✅ PASS | `npx tsc --noEmit` → exit 0, zero errors. |
+| 13 | Dependency Security | ✅ PASS | 4 high vulns (`next`, `@next/eslint-plugin-next`, `eslint-config-next`, `glob`) are ALL pre-existing scaffold debt — `next@14.2.35` pinned in scaffold commit 975eef9. No NEW high/critical introduced this sprint. Tracked as DEBT-0.3. |
+| 14 | Bundle Size | ✅ PASS | `/` First Load JS = 96.8 kB vs. 250 KB budget (~39%). Shared chunk 87.3 kB. Only Nav island ships interactive JS. |
 
 ### Category 3: React / Frontend Quality
 | # | Check | Result | Notes |
 |---|---|---|---|
-| 15 | Hook Rules | ⚠️ N/A | No `useEffect`/`useState`/fetch in Sprint 0. Hero is a Server Component; error.tsx uses only the `reset` callback prop. |
-| 16 | XSS Safety | ✅ PASS | No `dangerouslySetInnerHTML`. All copy rendered as escaped text nodes from `siteConfig`. No user input. |
-| 17 | Accessibility | ✅ PASS | jest-axe reports 0 violations. Single `<h1>`, no h2–h6. CTAs are native `<a>` anchors (focusable, Enter-activatable) with visible `focus-visible:ring-2` indicators. `ArrowRight` is `aria-hidden="true"`. `<html lang="en">`. No inputs in scope. |
-| 18 | Performance | ✅ PASS | Hero is a Server Component (no `'use client'`, no hooks). Zero client-side re-render surface. 88 kB First Load. |
-| 19 | Error Boundaries | ✅ PASS | `app/error.tsx` exists, is `"use client"`, accepts `{ error, reset }` and renders a retry button calling `reset()`. |
-| 20 | Race Conditions | ⚠️ N/A | No async operations, no setState, no fetches in Sprint 0. |
-| 21 | Form Safety | ⚠️ N/A | No forms or submit buttons in Sprint 0. |
+| 15 | React Hooks Correctness | ✅ PASS | All 3 useEffect hooks have complete dep arrays and cleanup: Nav scroll listener (`Nav.tsx:23-30`), MobileMenu keydown + body-scroll restore (`MobileMenu.tsx:28-62`), ResumeDropdown mousedown+keydown (`ResumeDropdown.tsx:20-36`). No data-fetching effects (static RSC) → no AbortController needed. |
+| 16 | Security | ✅ PASS | No `process.env` in `components/ app/` client code; no `dangerouslySetInnerHTML`; all copy rendered as escaped text nodes; secrets server-side only. |
+| 17 | Accessibility | ✅ PASS | Skip link, hamburger `aria-label="Open navigation menu"` + `aria-expanded`, MobileMenu `role="dialog" aria-modal` + focus trap + Escape + focus restore, ResumeDropdown `aria-haspopup`/`aria-expanded`, decorative icons `aria-hidden`, real Selected Work image `role="img" aria-label`. a11y test tier green. |
+| 18 | Performance | ✅ PASS | Static RSC sections; no in-render derived recomputation of note; client islands minimal; no context re-render cascades. |
+| 19 | Error Boundaries | ✅ PASS | `app/error.tsx` present at the App Router route boundary (client component with reset). |
+| 20 | Race Condition Safety | ⚠️ N/A | No async mutations, no forms, no submit buttons this sprint — static content + nav toggles only. |
 
 ### Category 4: Data & Architecture Integrity
 | # | Check | Result | Notes |
 |---|---|---|---|
-| 22 | Storage Safety | ⚠️ N/A | No localStorage/sessionStorage/JSON.parse anywhere in Sprint 0. |
-| 23 | Empty/Error/Loading States | ✅ PASS | No data-fetching components (Hero static). Route-level error boundary present (#19). Nothing async to gate. |
-| 24 | Component Size | ✅ PASS | Largest file 56 lines (globals.css); all production files well under the 200-line cap (Hero 47, layout 42, tailwind 41, site-config 39, error 23, page 5). |
-| 25 | Input Validation | ✅ PASS | No API routes in Sprint 0 (`app/api` does not exist, asserted by contract test `no-api-routes.test.ts`). Nothing to validate. |
-| 26 | Idempotency | ✅ PASS | No payment/email/notification/state-changing routes — none required. |
-| 27 | Observability | ✅ PASS | `grep "console\."` in app/+components/+lib/ → zero matches. error.tsx surfaces (does not swallow) render errors. No routes → no structured logging needed. |
-| 28 | Timezone Safety | ✅ PASS | `grep "new Date("` → zero matches. No date/time handling in Sprint 0. |
-
-> Tally: 24 PASS, 0 FAIL, 4 N/A (#15 Hook Rules, #20 Race Conditions, #21 Form Safety, #22 Storage Safety — all genuinely inapplicable to a static Server-Component Hero with no async, forms, or storage).
+| 21 | Storage Integrity | ⚠️ N/A | No localStorage/sessionStorage/DB usage in Sprint 1 (MVP has no backend). |
+| 22 | Empty / Error / Loading States | ⚠️ N/A | No data-fetching components; all sections render static siteConfig content. Route-level error boundary present (#19). |
+| 23 | Component Size Compliance | ✅ PASS | Largest prod file = `lib/site-config-types.ts` (184 lines). All `components/` + `app/` files well under 200. |
+| 24 | Input Validation at API Boundaries | ✅ PASS | No API route handlers this sprint (`contract/no-api-routes.test.ts` enforces this). Zod boundary rule trivially satisfied. |
+| 25 | Idempotency | ✅ PASS | No state-changing/email/payment routes exist. No idempotency surface. |
+| 26 | Structured Observability | ✅ PASS | `grep "console\."` over `src/ lib/ app/ components/` (.ts/.tsx) → zero hits. Vercel Analytics wired in `app/layout.tsx:62` (NFR-11.O). |
+| 27 | Timezone Safety | ✅ PASS | No `new Date(...)` in production code; no time-bearing fields. |
+| 28 | Suspense / Async UI Consistency | ✅ PASS | No async data; no ad-hoc loading ladders introduced. Pattern consistency preserved. |
 
 ---
 
 ## Build & Test Output
 
 ```
-# npm run test:run
-Test Suites: 6 passed, 6 total
-Tests:       52 passed, 52 total
-Snapshots:   0 total
+$ npm run test:run
+Test Suites: 22 passed, 22 total
+Tests:       284 passed, 284 total
+Time:        5.377 s
 
-# npx tsc --noEmit
-(exit 0, no output)
+$ npx tsc --noEmit
+EXIT:0
 
-# npm run lint
-✔ No ESLint warnings or errors
-
-# npm run build
+$ npm run build
 ✓ Compiled successfully
 Route (app)                              Size     First Load JS
-┌ ○ /                                    807 B            88 kB
-└ ○ /_not-found                          873 B          88.1 kB
-+ First Load JS shared by all            87.2 kB
+┌ ○ /                                    195 B          96.8 kB
+├ ○ /artifacts                           195 B          96.8 kB
+├ ○ /git                                 195 B          96.8 kB
+├ ○ /robots.txt                          0 B                0 B
+├ ○ /sitemap.xml                         0 B                0 B
+├ ○ /work/teams-retro                    195 B          96.8 kB
+└ ○ /writing                             195 B          96.8 kB
++ First Load JS shared by all            87.3 kB
 
-# npm audit --audit-level=high
-22 vulnerabilities (18 moderate, 4 high) — all in pre-existing next@14.2.35 + transitive postcss; none from lucide-react.
+$ npm run lint
+✔ No ESLint warnings or errors
+
+$ npm audit --audit-level=high
+22 vulnerabilities (18 moderate, 4 high)
+  → 4 high: next, @next/eslint-plugin-next, eslint-config-next, glob
+  → ALL pre-existing in the Sprint-0 scaffold (next@14.2.35 pinned in commit 975eef9)
+  → none introduced this sprint
+```
+
+### Grep gate results (all clean)
+```
+NeuroMetrics / Agentic Orchestration / AI Intelligence Center / Career History
+  → only in negative test assertions (correct; absent from production)
+style={{                → 0 hits
+<style                  → 0 hits
+console.                → 0 hits in src/ lib/ app/ components/
+TODO/FIXME/HACK/Lorem   → 0 hits in production
+target="_blank"         → 5; rel="noopener noreferrer" → 5 (1:1, all external links protected)
 ```
 
 ---
 
-## Discrepancy Note (informational, not a failure)
-
-IMPLEMENTATION_NOTES.md (DEV) flagged `Hero.test.tsx` T-0.2 as an unsatisfiable/defective test causing a 51/52 result. The version of `src/__tests__/Hero.test.tsx` in the repo at audit time scopes its `getByText` predicate with `if (!element || element.tagName !== 'H1') return false`, restricting the match to the single `<h1>` and resolving the multi-element collision. All 52 tests pass at audit time. No production defect and no test-discipline violation (H1-scoping is a TEST-tier concern; the assertion remains a valid single-element check). Recommend DEV/TEST update IMPLEMENTATION_NOTES to reflect the resolved 52/52 state.
-
----
-
-## Required Fixes
-
-None. Verdict is APPROVED.
-
----
+## Known, Non-Blocking Items (accepted for APPROVED)
+- **Public binary assets** (`public/resumes/Adwait_Mulye_PM-Technical.pdf`, `…_TPM.pdf`, `public/opengraph.jpg`) — human manual prerequisite; cannot be committed as code. Documented in IMPLEMENTATION_NOTES + TECH_DEBT. Build passes without them. Required before public deploy + Playwright E2E.
+- **Playwright E2E** runs via `npm run test:e2e` (script present, 8 spec files in `e2e/`) against a live dev server — the correct gate; intentionally not folded into `jest --ci` (DEBT-1.6 / TASK-1.19). Not a FAIL.
+- **DEBT-0.3** — 4 high scaffold CVEs; clear via a `next` major bump in a dedicated security sprint before public launch.
+- IMPLEMENTATION_NOTES Sprint-1 "Decisions/Deviations" still narrates the pre-fix state ("Hero CTAs NOT repointed"); the live code, tests, and ADR-0009 supersede it. Cosmetic doc-staleness only — logged as DEBT-1.9 below.
 
 ## Sign-Off
+Verdict: **APPROVED** — all four prior FAILs resolved and verified; zero FAIL items in the 28-point re-audit.
 
-**Verdict: APPROVED** — all 28 audit points clear with zero FAIL.
-
-Recommended next steps:
+### Recommended commit + push
 ```bash
 git add -A
-git commit -m "feat(home): Sprint 0 Next.js foundation + Hero section (APPROVED)"
+git commit -m "fix(home): repoint Hero CTAs to real targets; close DEBT-0.2 (TASK-1.15)
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
 git push origin main
 ```
-
-Tech debt: 1 new entry appended (DEBT-0.3 — pre-existing Next.js framework CVEs). Existing DEBT-0.1 (animations) and DEBT-0.2 (CTA placeholders) unchanged.

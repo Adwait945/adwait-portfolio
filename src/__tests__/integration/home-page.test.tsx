@@ -43,22 +43,20 @@ describe('AC-0.8: Home page renders Hero as sole content', () => {
 })
 
 // ---------------------------------------------------------------------------
-// AC-UI-1.10: Nav is NOT present in Sprint 0
+// AC-UI-1.10: Sprint 1 — Hero CTAs now have real hrefs (DEBT-0.2 resolved).
+// Nav lives in layout.tsx and does not render when testing <Home /> in isolation.
+// Full nav + link coverage is in layout-s1.test.tsx and home-page-s1.test.tsx.
 // ---------------------------------------------------------------------------
-describe('AC-UI-1.10: Nav component is NOT rendered in Sprint 0', () => {
-  it('AC-UI-1.10: no <nav> element in the page', () => {
+describe('AC-UI-1.10: Hero CTAs have real hrefs (Sprint 1)', () => {
+  it('AC-UI-1.10: primary CTA links to /work/teams-retro', () => {
     render(<Home />)
-    const nav = document.querySelector('nav')
-    expect(nav).toBeNull()
+    const primaryLink = screen.getByRole('link', { name: /View Featured Work/i })
+    expect(primaryLink).toHaveAttribute('href', '/work/teams-retro')
   })
 
-  it('AC-UI-1.10: "Adwait Mulye" site name link is not rendered as navigation', () => {
+  it('AC-UI-1.10: secondary CTA links to #how-i-work', () => {
     render(<Home />)
-    // The mock shows a name in the upper-left (Nav), which must NOT appear in Sprint 0.
-    // We check that the only links present are the Hero CTAs (pointing to "#").
-    const links = screen.getAllByRole('link')
-    links.forEach((link) => {
-      expect(link).toHaveAttribute('href', '#')
-    })
+    const secondaryLink = screen.getByRole('link', { name: /How I Build/i })
+    expect(secondaryLink).toHaveAttribute('href', '#how-i-work')
   })
 })

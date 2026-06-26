@@ -1,0 +1,175 @@
+<svg viewBox="0 0 780 620" xmlns="http://www.w3.org/2000/svg" font-family="monospace, sans-serif">
+  <title>adwait-portfolio Sprint 1 Architecture</title>
+  <desc>Diagram showing data flow from PORTFOLIO_CONTENT.md through site-config.ts into Next.js layout, page, and all 10 home section components, plus the 5 route structure.</desc>
+
+  <!-- Background -->
+  <rect width="780" height="620" fill="#0a0f1e" rx="12"/>
+
+  <!-- LEGEND -->
+  <rect x="20" y="14" width="10" height="10" rx="2" fill="#0ea5e9"/>
+  <text x="35" y="23" fill="#8899bb" font-size="10">Content/Config</text>
+  <rect x="130" y="14" width="10" height="10" rx="2" fill="#6366f1"/>
+  <text x="145" y="23" fill="#8899bb" font-size="10">Layout Shell</text>
+  <rect x="240" y="14" width="10" height="10" rx="2" fill="#10b981"/>
+  <text x="255" y="23" fill="#8899bb" font-size="10">Home Sections</text>
+  <rect x="360" y="14" width="10" height="10" rx="2" fill="#f59e0b"/>
+  <text x="375" y="23" fill="#8899bb" font-size="10">Routes</text>
+
+  <!-- ROW 1: Content source -->
+  <rect x="20" y="44" width="200" height="44" rx="6" fill="#0ea5e920" stroke="#0ea5e9" stroke-width="1.5"/>
+  <text x="120" y="62" text-anchor="middle" fill="#0ea5e9" font-size="11" font-weight="bold">PORTFOLIO_CONTENT.md</text>
+  <text x="120" y="78" text-anchor="middle" fill="#7dd3fc" font-size="9">Locked copy v3 — single source of truth</text>
+
+  <line x1="120" y1="88" x2="120" y2="108" stroke="#0ea5e9" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+  <rect x="20" y="108" width="200" height="44" rx="6" fill="#0ea5e920" stroke="#0ea5e9" stroke-width="1.5"/>
+  <text x="120" y="126" text-anchor="middle" fill="#0ea5e9" font-size="11" font-weight="bold">lib/site-config.ts</text>
+  <text x="120" y="142" text-anchor="middle" fill="#7dd3fc" font-size="9">Typed content + nav + footer + sections</text>
+
+  <!-- arrow from site-config right to layout -->
+  <line x1="220" y1="130" x2="300" y2="130" stroke="#0ea5e9" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+
+  <!-- layout.tsx box -->
+  <rect x="300" y="108" width="200" height="44" rx="6" fill="#6366f120" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="400" y="126" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="bold">app/layout.tsx</text>
+  <text x="400" y="142" text-anchor="middle" fill="#c7d2fe" font-size="9">html.dark · fonts · SkipLink + Nav + Footer</text>
+
+  <!-- layout sub-components -->
+  <rect x="300" y="168" width="58" height="32" rx="5" fill="#6366f115" stroke="#6366f1" stroke-width="1"/>
+  <text x="329" y="182" text-anchor="middle" fill="#a5b4fc" font-size="9">SkipLink</text>
+  <text x="329" y="194" text-anchor="middle" fill="#c7d2fe" font-size="8">a11y</text>
+
+  <rect x="366" y="168" width="58" height="32" rx="5" fill="#6366f115" stroke="#6366f1" stroke-width="1"/>
+  <text x="395" y="182" text-anchor="middle" fill="#a5b4fc" font-size="9">Nav</text>
+  <text x="395" y="194" text-anchor="middle" fill="#c7d2fe" font-size="8">'use client'</text>
+
+  <rect x="432" y="168" width="58" height="32" rx="5" fill="#6366f115" stroke="#6366f1" stroke-width="1"/>
+  <text x="461" y="182" text-anchor="middle" fill="#a5b4fc" font-size="9">Footer</text>
+  <text x="461" y="194" text-anchor="middle" fill="#c7d2fe" font-size="8">server</text>
+
+  <line x1="329" y1="152" x2="329" y2="168" stroke="#6366f1" stroke-width="1"/>
+  <line x1="400" y1="152" x2="395" y2="168" stroke="#6366f1" stroke-width="1"/>
+  <line x1="461" y1="152" x2="461" y2="168" stroke="#6366f1" stroke-width="1"/>
+
+  <!-- vertical arrow from layout down to routes -->
+  <line x1="400" y1="200" x2="400" y2="228" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arr-purple)"/>
+
+  <!-- Route label -->
+  <text x="400" y="244" text-anchor="middle" fill="#8899bb" font-size="9" font-style="italic">5 routes rendered inside layout's &lt;main&gt;</text>
+
+  <!-- Route boxes -->
+  <rect x="20" y="254" width="110" height="36" rx="5" fill="#f59e0b20" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="75" y="270" text-anchor="middle" fill="#fcd34d" font-size="10" font-weight="bold">/ (Home)</text>
+  <text x="75" y="283" text-anchor="middle" fill="#fde68a" font-size="8">app/page.tsx</text>
+
+  <rect x="148" y="254" width="130" height="36" rx="5" fill="#f59e0b20" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="213" y="270" text-anchor="middle" fill="#fcd34d" font-size="10" font-weight="bold">/work/teams-retro</text>
+  <text x="213" y="283" text-anchor="middle" fill="#fde68a" font-size="8">TeamsRetroSkeleton</text>
+
+  <rect x="296" y="254" width="90" height="36" rx="5" fill="#f59e0b15" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="341" y="270" text-anchor="middle" fill="#fcd34d" font-size="10">/artifacts</text>
+  <text x="341" y="283" text-anchor="middle" fill="#fde68a" font-size="8">stub — Sprint 3</text>
+
+  <rect x="396" y="254" width="80" height="36" rx="5" fill="#f59e0b15" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="436" y="270" text-anchor="middle" fill="#fcd34d" font-size="10">/git</text>
+  <text x="436" y="283" text-anchor="middle" fill="#fde68a" font-size="8">stub — Sprint 4</text>
+
+  <rect x="486" y="254" width="80" height="36" rx="5" fill="#f59e0b15" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="526" y="270" text-anchor="middle" fill="#fcd34d" font-size="10">/writing</text>
+  <text x="526" y="283" text-anchor="middle" fill="#fde68a" font-size="8">stub — Sprint 4</text>
+
+  <!-- connecting lines from layout to routes -->
+  <line x1="400" y1="248" x2="75"  y2="254" stroke="#f59e0b" stroke-width="1"/>
+  <line x1="400" y1="248" x2="213" y2="254" stroke="#f59e0b" stroke-width="1"/>
+  <line x1="400" y1="248" x2="341" y2="254" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="400" y1="248" x2="436" y2="254" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="400" y1="248" x2="526" y2="254" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <circle cx="400" cy="248" r="3" fill="#f59e0b"/>
+
+  <!-- arrow from Home route down to sections -->
+  <line x1="75" y1="290" x2="75" y2="318" stroke="#10b981" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+  <!-- 10-section grid Row A -->
+  <rect x="20"  y="324" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="68"  y="342" text-anchor="middle" fill="#6ee7b7" font-size="9">1 · Hero</text>
+
+  <rect x="124" y="324" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="172" y="342" text-anchor="middle" fill="#6ee7b7" font-size="9">2 · HowIWork</text>
+
+  <rect x="228" y="324" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="276" y="342" text-anchor="middle" fill="#6ee7b7" font-size="9">3 · SelectedWork</text>
+
+  <rect x="332" y="324" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="380" y="342" text-anchor="middle" fill="#6ee7b7" font-size="9">4 · CareerTraj.</text>
+
+  <rect x="436" y="324" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="484" y="342" text-anchor="middle" fill="#6ee7b7" font-size="9">5 · Skills</text>
+
+  <!-- Row B: sections 6-10 -->
+  <rect x="20"  y="360" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="68"  y="378" text-anchor="middle" fill="#6ee7b7" font-size="9">6 · Experience</text>
+
+  <rect x="124" y="360" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="172" y="378" text-anchor="middle" fill="#6ee7b7" font-size="9">7 · Education</text>
+
+  <rect x="228" y="360" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="276" y="378" text-anchor="middle" fill="#6ee7b7" font-size="9">8 · About</text>
+
+  <rect x="332" y="360" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="380" y="378" text-anchor="middle" fill="#6ee7b7" font-size="9">9 · BeyondWork</text>
+
+  <rect x="436" y="360" width="96" height="28" rx="4" fill="#10b98115" stroke="#10b981" stroke-width="1"/>
+  <text x="484" y="378" text-anchor="middle" fill="#6ee7b7" font-size="9">10 · ContactCTA</text>
+
+  <!-- bracket: all server components -->
+  <line x1="542" y1="324" x2="555" y2="324" stroke="#10b981" stroke-width="1"/>
+  <line x1="555" y1="324" x2="555" y2="388" stroke="#10b981" stroke-width="1"/>
+  <line x1="542" y1="388" x2="555" y2="388" stroke="#10b981" stroke-width="1"/>
+  <text x="560" y="360" fill="#10b981" font-size="9" dominant-baseline="middle">All server</text>
+  <text x="560" y="372" fill="#10b981" font-size="9">components</text>
+
+  <!-- TEST LAYERS -->
+  <rect x="20" y="412" width="740" height="60" rx="6" fill="#ffffff08" stroke="#ffffff18" stroke-width="1"/>
+  <text x="390" y="430" text-anchor="middle" fill="#8899bb" font-size="10" font-weight="bold">TEST LAYERS (283 tests total)</text>
+
+  <rect x="32"  y="438" width="120" height="24" rx="4" fill="#6366f120" stroke="#6366f1" stroke-width="1"/>
+  <text x="92"  y="454" text-anchor="middle" fill="#a5b4fc" font-size="9">Unit — 12 suites</text>
+
+  <rect x="164" y="438" width="140" height="24" rx="4" fill="#6366f120" stroke="#6366f1" stroke-width="1"/>
+  <text x="234" y="454" text-anchor="middle" fill="#a5b4fc" font-size="9">Integration — 4 suites</text>
+
+  <rect x="316" y="438" width="120" height="24" rx="4" fill="#6366f120" stroke="#6366f1" stroke-width="1"/>
+  <text x="376" y="454" text-anchor="middle" fill="#a5b4fc" font-size="9">A11y — 3 suites</text>
+
+  <rect x="448" y="438" width="120" height="24" rx="4" fill="#6366f120" stroke="#6366f1" stroke-width="1"/>
+  <text x="508" y="454" text-anchor="middle" fill="#a5b4fc" font-size="9">Contract — 1 suite</text>
+
+  <rect x="580" y="438" width="168" height="24" rx="4" fill="#f59e0b20" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="664" y="454" text-anchor="middle" fill="#fcd34d" font-size="9">E2E Playwright — 8 specs*</text>
+
+  <!-- BUILD PIPELINE -->
+  <rect x="20" y="492" width="740" height="44" rx="6" fill="#ffffff05" stroke="#ffffff12" stroke-width="1"/>
+  <text x="50" y="514" fill="#8899bb" font-size="9" font-weight="bold">BUILD PIPELINE</text>
+  <text x="170" y="514" fill="#6ee7b7" font-size="9">tsc ✓</text>
+  <text x="220" y="514" fill="#6ee7b7" font-size="9">lint ✓</text>
+  <text x="270" y="514" fill="#6ee7b7" font-size="9">build ✓</text>
+  <text x="340" y="514" fill="#6ee7b7" font-size="9">First Load JS: 96.8 kB / 250 kB</text>
+  <text x="530" y="514" fill="#fcd34d" font-size="9">→ Vercel (pending setup)</text>
+  <text x="170" y="528" fill="#7dd3fc" font-size="8">11 static routes · sitemap.xml · robots.txt · OG meta</text>
+
+  <!-- FOOTER NOTES -->
+  <text x="20" y="556" fill="#8899bb" font-size="8">* E2E tests require a running dev server — run: npm run dev, then: npm run test:e2e</text>
+  <text x="20" y="568" fill="#8899bb" font-size="8">Manual prereqs before deploy: public/resumes/*.pdf · public/opengraph.jpg · NEXT_PUBLIC_SITE_URL in .env.local</text>
+
+  <defs>
+    <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#0ea5e9"/>
+    </marker>
+    <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#6366f1"/>
+    </marker>
+    <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#10b981"/>
+    </marker>
+  </defs>
+</svg>
