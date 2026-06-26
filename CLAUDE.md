@@ -2,6 +2,10 @@
 
 This file is loaded automatically at the start of every Claude Code session in this project. It applies to all agents (PRODUCT, ARCHITECT, TEST, DEV, PROFESSOR, REVIEWER) without manual pasting.
 
+## Session Log
+
+Read `docs/SESSION_LOG.md` at the start of every session. It contains live decisions and judgment calls from prior sessions that are not captured in other docs, ADRs, or git history. Check it before making any architectural decisions or running any agent.
+
 ---
 
 ## Stack
