@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import SkipLink from "@/components/layout/SkipLink";
+import Nav from "@/components/layout/Nav";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -36,7 +39,12 @@ export default function RootLayout({
       lang="en"
       className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <SkipLink />
+        <Nav />
+        <main id="main-content">{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }
