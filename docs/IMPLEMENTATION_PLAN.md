@@ -1,173 +1,278 @@
-# Sprint 0 — Implementation Plan
+# Sprint 1 — Implementation Plan
 _Written by ARCHITECT on 2026-06-25_
 
-DEV executes top-to-bottom. One commit per task. Mark `[x]` as each completes.
-TEST writes `src/__tests__/Hero.test.tsx` BEFORE DEV starts TASK-0.5 (tests must fail first).
-Project already scaffolded (Next.js 14.2.35, App Router, TS strict, Tailwind 3, ESLint). No `create-next-app` re-init needed; the scaffold's default files are rewritten in place.
+> Supersedes the Sprint 0 plan. DEV executes top-to-bottom, one commit per task, marking `[x]` as each completes.
+> **ATDD:** TEST authors all Jest + Playwright specs (referenced per task) BEFORE DEV implements the matching component; specs must fail first. DEV does not modify test files.
+> **Pre-flight (DEV, record in `docs/IMPLEMENTATION_NOTES.md`):** read every prototype + UI mock listed in each task's AC refs before coding that component (prototype-read convention, REVIEWER-enforced). Verify Global UI Infrastructure (ARCHITECTURE_DESIGN §8) survives every layout/globals/tailwind touch.
+> **Verbatim rule:** all visible copy comes from `PORTFOLIO_CONTENT.md` v3 via `siteConfig`. No inline strings in JSX, no paraphrasing (NFR-G.CP, NFR-1.I).
 
 ---
 
-## TASK-0.0: Add dependencies and scripts
-**File(s):** `package.json`
-**AC refs:** AC-0.4 (lucide icon), NFR-1.T, test toolchain
-- [x] Add runtime dependency: `lucide-react`
-- [x] Add devDependencies: `jest`, `jest-environment-jsdom`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `@types/jest`
-- [x] Add scripts: `"test": "jest"`, `"test:run": "jest --ci"`, `"typecheck": "tsc --noEmit"`
-- [x] Run `npm install`; confirm lockfile updates and no peer-dep errors
-**Commit:** `chore(deps): add lucide-react and jest test toolchain (TASK-0.0)`
+## TASK-1.0: Extend site-config with all Sprint 1 content
+**File(s):** `lib/site-config.ts` (modify), `lib/content/nav-footer.ts`, `lib/content/home.ts`, `lib/content/teams-retro.ts`, `lib/content/stubs.ts`, `lib/content/meta.ts` (create)
+**AC refs:** AC-1.1/1.2/1.6–1.8, AC-2.x–AC-10.x copy, AC-11.2–11.8, NFR-G.CP, NFR-G.SL, NFR-1.I
+- [x] Add all new types from ARCHITECTURE_DESIGN §3 (`Routes`, `NavConfig`, `FooterConfig`, `Pillar`, `WorkCard`, `CareerTrajectory`, `SkillGroup`, `ExperienceEntry`, `EducationEntry`, `About`, `BeyondTheWork`, `ContactCTA`, `Metric`, `TeamsRetro`, `TechnicalTwin`, `PageMeta`, `StubContent`, leaves `Cta`/`NavLink`)
+- [x] Split content into `lib/content/*.ts` modules (each < 200 lines); `lib/site-config.ts` imports + aggregates them and STILL exports `siteConfig` with all existing Sprint-0 keys (`hero`, `subheadline`, `name`, `email`, `linkedinUrl`, `githubUrl`) unchanged
+- [x] Transcribe §2,§4–§17 copy VERBATIM (em-dashes `—`, middots `·`, exact metric strings; "an AI-native PM" / "AI-Native PM" per CONTENT, NOT prototype "a"; full §7 skill lists, not the prototype's shorter ones)
+- [x] Add `routes` (teamsRetro = `/work/teams-retro` — see DEBT-1.1), `ogImage`, `siteUrl` (env-overridable), `nav`, `footer`, `meta`, `stubs`, `technicalTwin`
+- [x] Confirm Sprint-0 `Hero.test.tsx` (5 tests) still passes after the refactor
+**Commit:** `feat(config): extend site-config with all Sprint 1 content (TASK-1.0)`
 
 ---
 
-## TASK-0.1: Configure tailwind.config.ts
-**File(s):** `tailwind.config.ts`
-**AC refs:** AC-0.3, AC-UI-1.1
-- [x] Set `darkMode: "class"`
-- [x] Set `content` to `["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"]`
-- [x] Map colors to `hsl(var(--*))`: `background`, `foreground`, `primary` (`DEFAULT` + `foreground`), `card` (`DEFAULT`), `border`, `muted.foreground` (per ARCHITECTURE_DESIGN §7.4)
-- [x] Add `fontFamily`: `sans → var(--font-sans)`, `display → var(--font-display)`, `mono → var(--font-mono)` (each with system fallbacks)
-- [x] Add `borderRadius` lg/md/sm derived from `var(--radius)`
-- [x] Remove the old bare `var(--background)` / `var(--foreground)` mappings
-**Commit:** `feat(config): tailwind theme tokens, fonts, dark mode (TASK-0.1)`
+## TASK-1.1: Container component
+**File(s):** `components/layout/Container.tsx`
+**AC refs:** AC-1.9
+- [x] Server Component. Props `{ children, className?, id? }`
+- [x] `max-w-[1200px] mx-auto px-4 md:px-6 lg:px-8` (symmetric padding; no right-side gap)
+- [x] Merge `className` so callers can add `py-*` / `bg-*`
+**Commit:** `feat(layout): responsive Container wrapper (TASK-1.1)`
 
 ---
 
-## TASK-0.2: Migrate design tokens to app/globals.css
-**File(s):** `app/globals.css`
-**AC refs:** AC-0.2, AC-UI-1.1, AC-UI-1.2, AC-UI-1.6
-- [x] Keep the three `@tailwind` directives (base, components, utilities)
-- [x] Remove the default light/dark `prefers-color-scheme` block, the `Arial` body rule, and `.text-balance`
-- [x] Add `:root { ... }` with the 8 authoritative tokens from ARCHITECTURE_DESIGN §7.3 (`--background`, `--foreground`, `--primary`, `--primary-foreground`, `--card`, `--muted-foreground`, `--border`, `--radius`) — optionally the sibling block too
-- [x] Add `@layer base` (body: `font-sans antialiased bg-background text-foreground`; h1–h6: `font-display tracking-tight`)
-- [x] Add `@layer utilities` with `.glass`, `.glass-card` (+ `:hover`), `.text-gradient` exactly as in ARCHITECTURE_DESIGN §7.5
-- [x] Verify no hardcoded hex in tokens — all HSL channel triplets
-**Commit:** `feat(styles): migrate design tokens and glass utilities (TASK-0.2)`
+## TASK-1.2: SkipLink component
+**File(s):** `components/layout/SkipLink.tsx`
+**AC refs:** AC-1.11, NFR-1.A
+- [x] Server Component. `<a href="#main-content">` "Skip to content"
+- [x] Visible only on keyboard focus: `sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60]` + visible styling
+**Commit:** `feat(layout): focus-only skip-to-content link (TASK-1.2)`
 
 ---
 
-## TASK-0.3: Rewrite app/layout.tsx (fonts + dark + metadata)
+## TASK-1.3: Nav + MobileMenu + ResumeDropdown
+**File(s):** `components/layout/Nav.tsx`, `components/layout/MobileMenu.tsx`, `components/layout/ResumeDropdown.tsx`
+**AC refs:** AC-1.1–1.5, AC-UI-1.1/1.2, NFR-1.A, NFR-1.P, NFR-1.S
+**Pre-req specs:** E2E-4, E2E-6, E2E-7, E2E-12
+- [x] `Nav.tsx` `"use client"`: `fixed top-0 inset-x-0 z-50`; reads `siteConfig.nav`; brand "Adwait Mulye" (`font-display`, links `/`); 5 center links (hidden `< md`); `usePathname()` → active link gets primary underline/color (AC-1.5)
+- [x] `useEffect` scroll listener → add `.glass`/backdrop-blur + darker bg after scroll > ~80vh (AC-1.3); clean up listener
+- [x] Hamburger button `< md` with `aria-label="Open navigation menu"` + `aria-expanded`; toggles `MobileMenu`
+- [x] `MobileMenu.tsx` `"use client"`: full-screen overlay, same 5 links; focus trap, Escape closes, restores focus to hamburger, body-scroll lock (NFR-1.A)
+- [x] `ResumeDropdown.tsx` `"use client"`: "Resume" button (`aria-haspopup`/`aria-expanded`) → 2 links (PM-Technical, TPM) from `siteConfig.nav.resumes`, each `target="_blank" rel="noopener noreferrer"`; click-outside + Escape close
+- [x] No `console.*`, no `style={{}}`; each file < 200 lines
+**Commit:** `feat(layout): sticky Nav with mobile menu and resume dropdown (TASK-1.3)`
+
+---
+
+## TASK-1.4: Footer component
+**File(s):** `components/layout/Footer.tsx`
+**AC refs:** AC-1.6–1.8, AC-UI-1.3, NFR-1.A, NFR-1.S
+- [x] Server Component; reads `siteConfig.footer`
+- [x] 3-column layout: left colophon (§17, small/muted), center site-map (5 links), right social (LinkedIn/GitHub/Email) icon links each with exact `aria-label` ("LinkedIn profile" / "GitHub profile" / "Email Adwait")
+- [x] External links `target="_blank" rel="noopener noreferrer"`; Email = `mailto:` (no target needed)
+- [x] Bottom full-width line "Plano, TX · Built 2026 · v1.0" — `text-xs` muted, below the 3 columns
+**Commit:** `feat(layout): three-column footer with social links (TASK-1.4)`
+
+---
+
+## TASK-1.5: Wire SkipLink + Nav + Footer + main into layout
 **File(s):** `app/layout.tsx`
-**AC refs:** AC-0.4, AC-0.5, AC-UI-1.1, AC-UI-1.10, NFR-1.A, NFR-1.P
-- [x] Remove `next/font/local` Geist imports entirely
-- [x] Import `Inter`, `Space_Grotesk`, `JetBrains_Mono` from `next/font/google`
-- [x] Configure each: `subsets: ["latin"]`, `display: "swap"`, `variable: "--font-sans" | "--font-display" | "--font-mono"`
-- [x] `<html lang="en" className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}>`
-- [x] `<body>{children}</body>` only — NO Nav, NO Footer (AC-0.5, AC-UI-1.10)
-- [x] Replace `metadata`: `title: "Adwait Mulye — Product Manager, Technical · TPM"`, `description` from PORTFOLIO_CONTENT §1 default meta description
-- [x] Keep `import "./globals.css"`
-**Commit:** `feat(layout): root shell with next/font fonts and dark theme (TASK-0.3)`
+**AC refs:** AC-1.10, AC-1.11, NFR-G.TH, NFR-G.FN
+- [x] PRESERVE `<html lang="en" className="dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}">` byte-for-byte
+- [x] `<body>`: `<SkipLink/>` → `<Nav/>` → `<main id="main-content">{children}</main>` → `<Footer/>`
+- [x] Do NOT remove fonts/metadata; do NOT add light-mode classes
+- [x] (Analytics added in TASK-1.16)
+**Commit:** `feat(layout): render skip link, nav, main, footer in root layout (TASK-1.5)`
 
 ---
 
-## TASK-0.4: Create lib/site-config.ts
-**File(s):** `lib/site-config.ts`
-**AC refs:** AC-0.6, AC-0.9, NFR-1.I, NFR-1.T
-- [x] Define and export `type SiteConfig` per ARCHITECTURE_DESIGN §1
-- [x] Export `const siteConfig: SiteConfig` with values VERBATIM from PORTFOLIO_CONTENT §1 + §3:
-  - `name: "Adwait Mulye"`, `role`, `headline`, `subheadline`, `email`, `linkedinUrl`, `githubUrl`
-  - `hero.eyebrow: "PRODUCT MANAGER, TECHNICAL · TECHNICAL PROGRAM MANAGER"`
-  - `hero.headlineLead: "Bridging Product Strategy "`, `headlineMuted: "and"`, `headlineTrailing: " "`, `headlineAccent: "Technical Execution"`
-  - `hero.subheadline`/`subheadline: "14 years turning ambiguous business intent into shipped software — now building full-stack, AI-native products end to end."`
-  - `hero.primaryCta: { label: "View Featured Work", href: "#" }`, `hero.secondaryCta: { label: "How I Build", href: "#" }`
-- [x] Verify: `headlineLead + headlineMuted + headlineTrailing + headlineAccent === "Bridging Product Strategy and Technical Execution"`
-- [x] Use the em-dash `—` character in the sub-headline, not a hyphen
-**Commit:** `feat(config): site-config with locked hero copy (TASK-0.4)`
+## TASK-1.6: HowIWork component
+**File(s):** `components/home/HowIWork.tsx`
+**AC refs:** AC-2.1–2.8, AC-UI-2.1–2.4, NFR-2.A, NFR-2.P
+**Pre-req specs:** E2E-3; Jest HowIWork unit
+- [x] Server Component; `<section id="how-i-work" className="py-24 scroll-mt-24">` inside `<Container>`
+- [x] Centered `<h2>`How I Work + muted subhead (§4)
+- [x] `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`; 3 `glass-card p-8 rounded-2xl flex flex-col h-full`
+- [x] Local `iconMap` → `Target`/`Code2`/`BrainCircuit` in `bg-primary/10 rounded-xl p-4 w-max`, icon `w-8 h-8 text-primary aria-hidden`
+- [x] `<h3>` titles; body `<p>`; tags `<span>` `font-mono text-xs px-3 py-1 bg-white/5 border border-white/10 rounded-md text-slate-300` (non-interactive)
+- [x] System Architecture tag: render `subLabel` parenthetical smaller/dimmer (second line or inline), wraps within card (AC-UI-2.3)
+**Commit:** `feat(home): How I Work three-pillar section (TASK-1.6)`
 
 ---
 
-## TASK-0.5: Create components/home/Hero.tsx
-**File(s):** `components/home/Hero.tsx`
-**AC refs:** AC-0.7, AC-0.9, AC-0.10, AC-UI-1.2 through AC-UI-1.9, NFR-1.A, NFR-1.I, NFR-1.ST
-**Pre-req:** `src/__tests__/Hero.test.tsx` exists and FAILS (TEST agent).
-- [x] Server Component (no `"use client"`, no hooks). Default export `Hero`.
-- [x] Import `siteConfig` from `@/lib/site-config` and `ArrowRight` from `lucide-react`
-- [x] `<section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden bg-background">`
-- [x] Optional decorative gradient layer at `z-0` (`absolute inset-0`)
-- [x] `<div className="container mx-auto px-4 md:px-6 relative z-10">` → `<div className="flex flex-col items-center text-center max-w-4xl mx-auto">`
-- [x] Eyebrow `<span>`: `px-6 py-2 text-xs font-mono tracking-[0.2em] uppercase text-primary border border-primary/30 rounded-full glass mb-12 inline-block` → `{siteConfig.hero.eyebrow}`
-- [x] `<h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-12 leading-[1.1] text-white">` with three spans: lead (white), `headlineMuted` in `text-slate-500`, `headlineAccent` in `text-primary`; preserve exact spacing so the accessible name is the full headline string
-- [x] Sub-headline `<p className="text-lg md:text-xl text-slate-400 max-w-2xl mb-16 leading-relaxed">{siteConfig.subheadline}</p>`
-- [x] Button row `<div className="flex flex-col sm:flex-row gap-6">`
-  - Primary `<a href={siteConfig.hero.primaryCta.href}>`: `inline-flex items-center justify-center bg-primary text-primary-foreground hover:opacity-90 font-bold px-12 rounded-xl h-16 text-lg shadow-[0_0_20px_rgba(0,229,255,0.3)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background` → label + `<ArrowRight aria-hidden="true" className="ml-2 w-5 h-5" />`
-  - Secondary `<a href={siteConfig.hero.secondaryCta.href}>`: `inline-flex items-center justify-center glass border border-white/10 hover:bg-white/10 text-white px-12 rounded-xl h-16 text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background` → label
-- [x] NO inline `style={{}}`, NO `<style>`, NO hardcoded copy strings (all from `siteConfig`)
-- [x] File under 200 lines
-**Commit:** `feat(home): Hero section with locked copy and CTAs (TASK-0.5)`
+## TASK-1.7: SelectedWork component
+**File(s):** `components/home/SelectedWork.tsx`
+**AC refs:** AC-3.1–3.8, AC-UI-3.1–3.6, NFR-3.A, NFR-3.P
+**Pre-req specs:** E2E-2; Jest SelectedWork unit (5,055 / 87/87 present; no "NeuroMetrics"/"Agentic Orchestration")
+- [x] Server Component; `<section className="py-24 bg-black/20">`; centered heading + subhead (§5)
+- [x] `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8`, equal-height cards from `siteConfig.selectedWork.cards`
+- [x] Card 1 (real): full opacity, `border border-white/10`; `aspect-[16/10]` image area with `bg-primary/5` placeholder + `alt="Teams Retro Dashboard"`; eyebrow `<span font-mono>`; `<h3>`; description; 4 metric lines each with `text-primary` bullet; quote in `glass rounded-xl border-l-2 border-l-primary` italic; stack chips; CTA "Read the case study →" `<Link href={routes.teamsRetro}>` with `ArrowUpRight`, `mt-auto`
+- [x] Cards 2 & 3 (placeholder): `opacity-60 border border-dashed border-white/20`, circular dashed placeholder, CTA "Coming in Sprint 3 →" as `<span>` (NOT link/button), no hover lift
+- [x] No fabricated strings anywhere (AC-3.7)
+**Commit:** `feat(home): Selected Work card grid (TASK-1.7)`
 
 ---
 
-## TASK-0.6: Wire Hero into app/page.tsx
-**File(s):** `app/page.tsx`
-**AC refs:** AC-0.8, AC-UI-1.10
-- [x] Remove all default `create-next-app` markup, `next/image`, external links
-- [x] Import `Hero` from `@/components/home/Hero`
-- [x] `export default function Home() { return <Hero />; }` — `<Hero />` is the sole content
-**Commit:** `feat(home): render Hero as home page content (TASK-0.6)`
+## TASK-1.8: CareerTrajectory component
+**File(s):** `components/home/CareerTrajectory.tsx`
+**AC refs:** AC-4.1–4.8, AC-UI-4.1–4.6, NFR-4.A, NFR-4.S
+**Pre-req specs:** E2E-5; Jest CareerTrajectory unit (heading exact; 2 resume buttons; emphasis line)
+- [x] Server Component; `<section className="py-24 bg-black/20">`; `<h2>` exactly "Career Trajectory"; intro line (§6)
+- [x] 3 sub-blocks as `glass-card p-8 rounded-2xl border border-white/10 grid grid-cols-1 md:grid-cols-3 gap-8`; label `font-bold text-white` + inline body
+- [x] Emphasis line centered `italic text-slate-300 max-w-3xl mx-auto`, "AI-Native PM" bold within italic (use `emphasisPre`/`emphasisBold`/`emphasisPost`)
+- [x] Two resume `<a>` (NOT `<button>`): primary "Download PM-Technical Resume" + secondary "Download TPM Resume", each with `ArrowDown` (`aria-hidden`), `target="_blank" rel="noopener noreferrer"`, hrefs from `siteConfig`; stack on mobile (`flex-col sm:flex-row`)
+- [x] SAFe note `text-xs text-slate-500 text-center max-w-2xl mx-auto` with "Email me" `mailto:` link
+- [x] Do NOT port the prototype's "Selected AI-Augmented Initiatives" block (out of scope)
+**Commit:** `feat(home): Career Trajectory with resume downloads (TASK-1.8)`
 
 ---
 
-## TASK-0.7: Add route error boundary
-**File(s):** `app/error.tsx`
-**AC refs:** NFR-1.O (do not swallow client errors), CLAUDE.md React rule (every page route has an error boundary)
-- [x] `"use client"` at top
-- [x] Default export `Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void })`
-- [x] Render a minimal dark-themed fallback with a retry `<button onClick={reset}>` (label via plain text is acceptable here; not part of locked copy)
-- [x] NO `console.log` / `console.error`
-**Commit:** `feat(home): route-level error boundary (TASK-0.7)`
+## TASK-1.9: Skills component
+**File(s):** `components/home/Skills.tsx`
+**AC refs:** AC-5.1–5.8, AC-UI-5.1–5.3, NFR-5.A
+**Pre-req specs:** Jest Skills unit ("Databricks Lakehouse" G2; "Mem0 MCP" G3)
+- [x] Server Component; `<section className="py-24">`; centered `<h2>`Skills & Tools
+- [x] `grid grid-cols-1 md:grid-cols-2 gap-8`; 4 `glass-card p-8 rounded-2xl border border-white/10`
+- [x] `<h3>` group heading `text-xl font-bold mb-4`; skills as single `<p text-sm text-slate-300 leading-relaxed>` dot-separated prose (NOT pill chips), verbatim full §7 lists
+**Commit:** `feat(home): Skills & Tools four-group grid (TASK-1.9)`
 
 ---
 
-## TASK-0.8: Jest + RTL setup
-**File(s):** `jest.config.ts`, `jest.setup.ts`
-**AC refs:** test infrastructure for T-0.1–T-0.5
-- [x] `jest.config.ts`: use `next/jest` `createJestConfig`, `testEnvironment: "jsdom"`, `moduleNameMapper: { "^@/(.*)$": "<rootDir>/$1" }`, `setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"]`
-- [x] `jest.setup.ts`: `import "@testing-library/jest-dom"`
-- [x] Confirm `npm test` runs and discovers `src/__tests__/Hero.test.tsx`
-**Commit:** `chore(test): jest + react testing library config (TASK-0.8)`
-
-> Note: the 5 test cases (T-0.1–T-0.5) in `src/__tests__/Hero.test.tsx` are authored by the TEST agent, not DEV. DEV does not modify test files (CLAUDE.md). This task only stands up the runner config.
+## TASK-1.10: Experience component
+**File(s):** `components/home/Experience.tsx`
+**AC refs:** AC-6.1–6.5, AC-UI-6.1–6.5, NFR-6.A
+**Pre-req specs:** Jest Experience unit (6 entries; "7-Eleven"; "FedNow")
+- [x] Server Component; `<section className="py-24 bg-black/20">`; centered heading + subhead (§8)
+- [x] Centered vertical timeline (`max-w-3xl mx-auto relative`): center line `absolute left-1/2 -translate-x-1/2 w-px bg-white/10` (`aria-hidden`); per entry a glow dot `w-3 h-3 rounded-full bg-primary shadow-[0_0_10px_rgba(0,229,255,0.8)] border-2 border-black z-10` (`aria-hidden`)
+- [x] 6 entry cards `glass p-6 rounded-2xl border border-white/5 hover:border-primary/30 transition-colors md:w-2/3 text-center`: date `text-primary font-mono text-sm`, `<h3>` role, company `text-slate-400`, marquee `<p text-sm text-slate-500>` — all verbatim
+- [x] "Full work history →" link (`ArrowUpRight`) with its own glow-dot node → PM-T resume, `target="_blank" rel="noopener noreferrer"`
+**Commit:** `feat(home): Experience timeline section (TASK-1.10)`
 
 ---
 
-## TASK-0.9: Verify NFR-1.T (Type Safety)
-**File(s):** none (verification)
-- [x] Run `npm run typecheck` (`tsc --noEmit`) → zero errors
-**Commit:** none (verification task; fold fixes into the relevant TASK commit)
+## TASK-1.11: Education component
+**File(s):** `components/home/Education.tsx`
+**AC refs:** AC-7.1–7.6, AC-UI-7.1–7.4, NFR-7.A
+**Pre-req specs:** Jest Education unit ("University of Houston–Clear Lake"; "University of Mumbai")
+- [x] Server Component; `<section className="py-16 border-t border-white/5">`; centered `<h2>`Education
+- [x] `grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto`; 2 entries, 3 lines each: degree `<p font-bold text-white mb-1>`, institution `<p text-sm text-slate-400>`, year `<p text-sm text-slate-500 mt-1>`
+- [x] NO glass-card, NO icons, NO logos (lightweight break)
+**Commit:** `feat(home): Education section (TASK-1.11)`
 
-## TASK-0.10: Verify NFR-1.P (Performance) + AC-0.11
-**File(s):** none (verification)
-- [x] Run `npm run build` → succeeds with no errors and no warnings
-- [x] Inspect First Load JS for `/` in the build route table → ≤ 250KB gzipped
-**Commit:** none
+---
 
-## TASK-0.11: Verify NFR-1.A (Accessibility) + AC-0.10
-**File(s):** none (verification)
-- [x] `npm run dev` → confirm single `<h1>`, both CTAs reachable by Tab with a visible focus ring, `Enter`-activatable
-- [x] Confirm `ArrowRight` has `aria-hidden="true"` and `<html lang="en">`
-- [x] Resize to 360px: buttons stack, no horizontal scrollbar; at 1440px: buttons side-by-side
-**Commit:** none
+## TASK-1.12: About (The Bridge) component
+**File(s):** `components/home/About.tsx`
+**AC refs:** AC-8.1–8.5, AC-UI-8.1–8.3, NFR-8.A
+**Pre-req specs:** Jest About unit (heading "The Bridge"; "AI-native PM" bold; para 3 exact)
+- [x] Server Component; `<section className="py-24">`; centered `<h2>`The Bridge
+- [x] `max-w-4xl mx-auto space-y-6`; 3 `<p text-slate-300 leading-relaxed>`; para 2 "AI-native PM" in `<strong>`/`font-bold text-white`; para 3 verbatim
+- [x] No card/background panel
+**Commit:** `feat(home): The Bridge (About) section (TASK-1.12)`
 
-## TASK-0.12: Verify NFR-1.ST + NFR-1.O + NFR-1.S + NFR-1.I + NFR-1.B
-**File(s):** none (verification)
-- [x] NFR-1.ST: grep `app/` + `components/` for `style={{` and `<style` → none
-- [x] NFR-1.O: grep `app/` + `components/` for `console.` → none
-- [x] NFR-1.S: grep Sprint-0 paths for `process.env` → none
-- [x] NFR-1.I: confirm no user-facing string literals in `Hero.tsx` (all from `siteConfig`)
-- [x] NFR-1.B: spot-check Hero in Chrome + Safari (or note `-webkit-backdrop-filter` present for Safari glass)
-**Commit:** none
+---
 
-## TASK-0.13: Verify tests (T-0.1–T-0.5)
-**File(s):** none (verification)
-- [x] `npm test` (or `npm run test:run`) → all 5 tests pass
-**Commit:** none
+## TASK-1.13: BeyondTheWork component
+**File(s):** `components/home/BeyondTheWork.tsx`
+**AC refs:** AC-9.1–9.5, AC-UI-9.1–9.3, NFR-9.A
+**Pre-req specs:** Jest BeyondTheWork unit ("25 years"; one paragraph)
+- [x] Server Component; `<section className="py-24">`; centered `<h2>`Beyond the Work
+- [x] One `<p text-center text-slate-300 leading-relaxed max-w-4xl mx-auto>` (§11 verbatim); exactly heading + paragraph, nothing else
+**Commit:** `feat(home): Beyond the Work section (TASK-1.13)`
+
+---
+
+## TASK-1.14: ContactCTA component
+**File(s):** `components/home/ContactCTA.tsx`
+**AC refs:** AC-10.1–10.6, AC-UI-10.1–10.4, NFR-10.A, NFR-10.S
+**Pre-req specs:** E2E-8; Jest ContactCTA unit (3 buttons; email mailto)
+- [x] Server Component; `<section className="py-24 border-t border-white/5">`; centered `<h2>`Let's talk
+- [x] Two body lines `text-slate-300` centered `space-y-2 mb-10` (§12)
+- [x] 3 equal `flex-1` `<a>` in `flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto`: LinkedIn + GitHub glass/outline (`target="_blank" rel="noopener noreferrer"`, hrefs from `siteConfig`); Email primary filled + glow shadow `mailto:` ; tab order LinkedIn→GitHub→Email
+**Commit:** `feat(home): Contact CTA section (TASK-1.14)`
+
+---
+
+## TASK-1.15: Assemble home page + repoint Hero CTAs
+**File(s):** `app/page.tsx` (rewrite), `components/home/Hero.tsx` (light edit via siteConfig), `lib/content/home.ts`
+**AC refs:** Locked section order, AC-2.1, AC-3.3, DEBT-0.2 resolution
+**Pre-req specs:** E2E-1, E2E-2, E2E-3
+- [x] (TASK-1.13b inline) Repoint `siteConfig.hero.primaryCta.href` → `routes.teamsRetro`, `secondaryCta.href` → `"#how-i-work"` (data only; do NOT edit Hero JSX; Sprint-0 Hero tests stay green)
+- [x] `app/page.tsx`: render in EXACT order — `<Hero/>` `<HowIWork/>` `<SelectedWork/>` `<CareerTrajectory/>` `<Skills/>` `<Experience/>` `<Education/>` `<About/>` `<BeyondTheWork/>` `<ContactCTA/>`
+- [x] No `<div>` wrapper that duplicates `<main>` (layout already provides `<main id>`); no Nav/Footer here
+- [x] Export `metadata` for `/` from `siteConfig.meta.home` (or rely on layout default + per-page override — see TASK-1.16)
+**Commit:** `feat(home): assemble all 10 sections in locked order (TASK-1.15)`
+
+---
+
+## TASK-1.16: TeamsRetroSkeleton page + BackLink
+**File(s):** `components/teams-retro/TeamsRetroSkeleton.tsx`, `components/shared/BackLink.tsx`, `app/work/teams-retro/page.tsx`
+**AC refs:** AC-11.2, AC-11.3, AC-UI-11.1–11.6, NFR-11.A
+**Pre-req specs:** E2E-10
+- [x] `BackLink.tsx` Server Component: `<Link href="/">` "← Back to home" with `ArrowLeft`, `text-sm text-slate-400 hover:text-primary`
+- [x] `TeamsRetroSkeleton.tsx` Server Component from `siteConfig.teamsRetro`: back nav (`pt-8`); hero (eyebrow `text-primary font-mono text-xs uppercase tracking-[0.2em]`, `<h1>`Teams Retro `text-5xl md:text-7xl`, subhead); metric strip `grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 max-w-4xl mx-auto`, numbers `text-primary font-display text-4xl md:text-5xl font-bold tracking-tight` (exact: 5,055 / 87/87 / 44 / ~20–30 hrs) as `<p>`/`<span>` (not headings); 3 content placeholder sections alternating transparent/`bg-black/20`, body `text-slate-400 text-lg italic`; demo box `border-2 border-dashed border-white/20 rounded-2xl p-12`; links row 3 buttons (`#` placeholders — DEBT-1.2)
+- [x] `app/work/teams-retro/page.tsx`: render `<TeamsRetroSkeleton/>`, export `metadata` from `siteConfig.meta.teamsRetro`
+- [x] NO fake chat / "AI Intelligence Center" / Technical Twin chat UI anywhere (AC-11.1)
+**Commit:** `feat(teams-retro): skeleton page with locked metric strip (TASK-1.16)`
+
+---
+
+## TASK-1.17: StubPageLayout + three stub routes
+**File(s):** `components/shared/StubPageLayout.tsx`, `app/artifacts/page.tsx`, `app/git/page.tsx`, `app/writing/page.tsx`
+**AC refs:** AC-11.4–11.8, AC-UI-11.7, NFR-11.A
+**Pre-req specs:** E2E-4
+- [x] `StubPageLayout.tsx` Server Component, props `{ eyebrow, title, blurb, statusNote }`: `<BackLink/>`, eyebrow `font-mono` primary, `<h1>` title (a11y), blurb, status note; centered max-width container, dark theme, no construction imagery
+- [x] `app/artifacts/page.tsx` → `<StubPageLayout {...siteConfig.stubs.artifacts}/>` + `metadata` (§16/§15)
+- [x] `app/git/page.tsx` → `siteConfig.stubs.git` + metadata
+- [x] `app/writing/page.tsx` → `siteConfig.stubs.writing` + metadata
+- [x] All copy verbatim §16
+**Commit:** `feat(stubs): reusable StubPageLayout and three stub routes (TASK-1.17)`
+
+---
+
+## TASK-1.18: SEO — metadata, sitemap, robots, Analytics
+**File(s):** `app/sitemap.ts`, `app/robots.ts`, `app/layout.tsx` (Analytics), `package.json`, `app/page.tsx` (metadata if not in 1.15)
+**AC refs:** AC-11.8–11.11, NFR-11.SEO, NFR-G.OG
+**Pre-req specs:** E2E-9 (no console errors)
+- [x] Add `@vercel/analytics` dependency; render `<Analytics/>` from `@vercel/analytics/react` in `app/layout.tsx` (preserve dark class + fonts)
+- [x] Every route exports `metadata` (title `<Page> — Adwait Mulye`, description, `openGraph` {title, description, url, type, images:[ogImage]}, `twitter`) from `siteConfig.meta` (§15)
+- [x] `app/sitemap.ts` → `MetadataRoute.Sitemap` for `/`, `/work/teams-retro`, `/artifacts`, `/git`, `/writing`
+- [x] `app/robots.ts` → allow all (`userAgent:"*", allow:"/"`) + `sitemap` ref
+- [x] Place `public/opengraph.jpg` (manual prerequisite)
+**Commit:** `feat(seo): metadata, sitemap, robots, vercel analytics (TASK-1.18)`
+
+---
+
+## TASK-1.19: Playwright E2E setup
+**File(s):** `playwright.config.ts`, `package.json`
+**AC refs:** NFR-11.E2E
+- [x] Add `@playwright/test`; `playwright.config.ts` (`testDir: src/__tests__/e2e`, Chromium + 360px mobile project, `webServer` build+start)
+- [x] Wire CI script so `npm run test:run` runs Jest then Playwright (or document the composite gate)
+- [x] (TEST authors E2E-1…E2E-12 specs; DEV does not modify them)
+**Commit:** `chore(test): playwright e2e config (TASK-1.19)`
+
+---
+
+## TASK-1.20: README + .env.example + .gitignore check
+**File(s):** `README.md`, `.env.example`, `.gitignore`
+**AC refs:** AC-11.12, AC-11.13
+- [x] `README.md`: project description; stack (Next.js 14, TS, Tailwind, shadcn/ui); `npm install`; `npm run dev`; `npm test` / `npm run test:run`; `npm run build`
+- [x] `.env.example`: list all env vars (MEM0_*, DATABASE_URL placeholder, `NEXT_PUBLIC_SITE_URL` for OG/sitemap)
+- [x] Confirm `.env.local` in `.gitignore` and not committed
+**Commit:** `docs(repo): readme, env example, gitignore verification (TASK-1.20)`
+
+---
+
+## TASK-1.21: Verification gates (NFRs)
+**File(s):** none (verification; fold fixes into the relevant task commit)
+- [x] **NFR-G.TC / NFR-11.T:** `npm run typecheck` → zero errors
+- [x] **NFR-G.BU / NFR-11.P:** `npm run build` → zero errors/warnings; inspect First Load JS (Nav island only; `/` ≤ 250KB)
+- [x] **NFR-G.ST:** grep `app/ components/` for `style={{` and `<style` → none
+- [x] **NFR-G.LL / NFR-1.O:** grep `app/ components/ lib/` for `console.` → none
+- [x] **NFR-1.S:** every external `<a>` has `rel="noopener noreferrer"`; no `process.env` in client code
+- [x] **NFR-G.SL:** every file ≤ 200 lines (esp. Nav, site-config split, TeamsRetroSkeleton)
+- [x] **NFR-G.TH:** `<html className="dark …">` + 3 font vars intact after layout edits
+- [x] **NFR-11.E2E:** `npm run test:run` → all Jest + 12 Playwright pass
+- [x] **NFR-11.A / NFR-11.SEO (Tier 3, post-deploy):** Lighthouse mobile on `/` → perf ≥ 90, a11y ≥ 95, SEO ≥ 95; OG tags verified on all 5 routes; no right-side whitespace gap at 1440px; sections in locked order
+**Commit:** none (verification)
 
 ---
 
 ## Execution order summary
-0.0 deps → 0.1 tailwind → 0.2 globals → 0.3 layout → 0.4 site-config → (TEST writes failing Hero.test.tsx) → 0.5 Hero → 0.6 page → 0.7 error boundary → 0.8 jest config → 0.9–0.13 verification gates.
+1.0 site-config → 1.1 Container → 1.2 SkipLink → 1.3 Nav → 1.4 Footer → 1.5 layout wiring → 1.6–1.14 home sections (TEST writes failing specs ahead of each) → 1.15 page assembly + Hero repoint → 1.16 Teams Retro → 1.17 stubs → 1.18 SEO/Analytics → 1.19 Playwright → 1.20 README/env → 1.21 verification gates.
 
 ## Definition of Done
-- All 13 functional ACs (AC-0.1–AC-0.13) + 10 UI ACs (AC-UI-1.1–1.10) pass.
-- All 8 NFRs verified (TASK-0.9 through 0.12).
-- `npm run build` clean, `npm run typecheck` zero errors, 5 Jest tests pass.
-- Global UI Infrastructure (ARCHITECTURE_DESIGN §7) present and correct.
-- DEV records pre-flight (prototype read) in `docs/IMPLEMENTATION_NOTES.md`.
+- All Epic 1–11 ACs + AC-UI rows pass; 10 sections in locked order; 5 routes reachable.
+- Global UI Infrastructure (ARCHITECTURE_DESIGN §8) preserved; Sprint-0 Hero tests green.
+- `npm run build` clean, `typecheck` zero errors, all Jest + 12 Playwright E2E pass.
+- No fake chat UI (AC-11.1); no fabricated content (NFR-G.CP).
+- DEV records prototype-read pre-flight in `docs/IMPLEMENTATION_NOTES.md`.
