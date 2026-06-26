@@ -9,6 +9,7 @@ const createJestConfig = nextJest({
 const config: Config = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
+    '^@vercel/analytics/react$': '<rootDir>/__mocks__/vercel-analytics.tsx',
     '^@/(.*)$': '<rootDir>/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],

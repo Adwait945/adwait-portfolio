@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react";
+import { siteConfig } from "@/lib/site-config";
 import SkipLink from "@/components/layout/SkipLink";
 import Nav from "@/components/layout/Nav";
 import Footer from "@/components/layout/Footer";
@@ -24,9 +26,22 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Adwait Mulye — Product Manager, Technical · TPM",
-  description:
-    "14 years turning ambiguous business intent into shipped software. Senior Product Owner moving into PMT / TPM roles at Big Tech, with an AI-native operating model.",
+  metadataBase: new URL(siteConfig.siteUrl),
+  title: siteConfig.meta.home.title,
+  description: siteConfig.meta.home.description,
+  openGraph: {
+    title: siteConfig.meta.home.title,
+    description: siteConfig.meta.home.description,
+    url: siteConfig.siteUrl,
+    type: "website",
+    images: [siteConfig.ogImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteConfig.meta.home.title,
+    description: siteConfig.meta.home.description,
+    images: [siteConfig.ogImage],
+  },
 };
 
 export default function RootLayout({
@@ -44,6 +59,7 @@ export default function RootLayout({
         <Nav />
         <main id="main-content">{children}</main>
         <Footer />
+        <Analytics />
       </body>
     </html>
   );
