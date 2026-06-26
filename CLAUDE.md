@@ -63,6 +63,7 @@ Document every env var the project uses. Never edit `.env` directly — only `.e
 | `MEM0_API_KEY` | Mem0 cross-IDE memory | Yes | — |
 | `MEM0_DEFAULT_USER_ID` | Mem0 user identity (same across all machines) | Yes | — |
 | `DATABASE_URL` | Primary DB connection string | Yes | — |
+| `NEXT_PUBLIC_SITE_URL` | Public base URL for OG tags, sitemap, robots | No | `https://adwaitmulye.com` |
 | [add more] | | | |
 
 ## File Structure
