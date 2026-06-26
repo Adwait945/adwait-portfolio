@@ -1,22 +1,33 @@
-export type SiteConfig = {
-  name: string;
-  role: string;
-  headline: string;
-  subheadline: string;
-  email: string;
-  linkedinUrl: string;
-  githubUrl: string;
-  hero: {
-    eyebrow: string;
-    subheadline?: string;
-    headlineLead: string;
-    headlineMuted: string;
-    headlineTrailing: string;
-    headlineAccent: string;
-    primaryCta: { label: string; href: string };
-    secondaryCta: { label: string; href: string };
-  };
-};
+/**
+ * Site configuration — typed aggregator.
+ *
+ * Sprint 0 keys (name/role/headline/subheadline/email/social/hero) are preserved
+ * verbatim. Sprint 1 content is composed from lib/content/* modules so each file
+ * stays under the 200-line cap (NFR-G.SL). All visible copy is transcribed
+ * verbatim from docs/PORTFOLIO_CONTENT.md v3 (NFR-G.CP).
+ */
+import type { SiteConfig } from "@/lib/site-config-types";
+import { routes, nav, footer } from "@/lib/content/nav-footer";
+import {
+  howIWork,
+  selectedWork,
+  careerTrajectory,
+  skills,
+  experience,
+  education,
+  about,
+  beyondTheWork,
+  contact,
+} from "@/lib/content/home";
+import { teamsRetro, technicalTwin } from "@/lib/content/teams-retro";
+import { stubs } from "@/lib/content/stubs";
+import { meta } from "@/lib/content/meta";
+
+export type { SiteConfig } from "@/lib/site-config-types";
+export * from "@/lib/site-config-types";
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://adwaitmulye.com";
 
 export const siteConfig: SiteConfig = {
   name: "Adwait Mulye",
@@ -36,4 +47,22 @@ export const siteConfig: SiteConfig = {
     primaryCta: { label: "View Featured Work", href: "#" },
     secondaryCta: { label: "How I Build", href: "#" },
   },
+  routes,
+  ogImage: "/opengraph.jpg",
+  siteUrl: SITE_URL,
+  nav,
+  footer,
+  howIWork,
+  selectedWork,
+  careerTrajectory,
+  skills,
+  experience,
+  education,
+  about,
+  beyondTheWork,
+  contact,
+  teamsRetro,
+  technicalTwin,
+  stubs,
+  meta,
 };
